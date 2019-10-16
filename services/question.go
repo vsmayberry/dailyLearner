@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type Question struct {
@@ -26,5 +27,14 @@ func loadPage(title string) (*Question, error) {
 }
 
 func QuestionHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, " rqst found from %s!", r.URL.Path[1:])
+	if strings.Compare(r.Method, "GET") == 0 {
+		fmt.Fprintf(w, "GET rqst found from %s!", r.URL.Path[1:])
+	} else if strings.Compare(r.Method, "POST") == 0 {
+		err := r.ParseForm()
+		if err != nil {
+			fmt.Fprintf(w, "POST rqst found from %s! unable to parse Form", r.URL.Path[1:])
+		}
+		fmt.Fprintf(w, "POST rqst found from %s with body! %s", r.URL.Path[1:], r.PostForm)
+	}
+	
 }
